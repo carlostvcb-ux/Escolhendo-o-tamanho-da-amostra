@@ -1,0 +1,128 @@
+---
+title: "Resumo para a prova 01 de Amostragem"
+author: "Carlos Alberto Alves de Meneses,20180003202"
+date: "2023-03-20"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Amostra Aleatória Simples
+
+* Estimativa do Tamanho da Amostra
+
+Uma **amostra aleatória simples** sem reposição (SRS) de tamanho n é selecionada de modo que todo subconjunto possível de n unidades distintas na população tem a mesma probabilidade de ser selecionada para compor a amostra.
+
+Há: ${n \choose N}$ amostras possíveis, e cada uma é igualmente provável, então a probabilidade de selecionar qualquer amostra individual S de n unidades é
+
+$P_{(s)} = \frac{1}{{n \choose N}} = \frac{n!(N - n)!}{N!}$
+
+Assim, a probabilidade de a i-ésima unidade aparecer na amostra é $\pi_i = \frac{n}{N}$.
+
+O fator $(1 - \frac{n}{N})$ é chamado de **correção de população finita**(fpc). Intuitivamente fazemos essa correçãoporque, com populações pequenas, quanto maior for nossa **fração de amostragem** $\frac{n}{N}$, mais informações teremos sobre a população e, portanto , menor será a variância.
+
+**Especificar o erro tolerável**
+
+A precisão desejada é muita vezes expressa em termos absolutos, como
+
+$P(|\frac{\bar{y}-\bar{y_U}}{\bar{y_U}}| \le \epsilon) = 1 - \alpha$
+
+Para obter precisão absoluta e, encontre um valor de $n$ que satisfaça:
+
+$\epsilon = Z_{\frac{\alpha}{2}} \sqrt(1-\frac{n}{N} \frac{S}{\sqrt{n}})}$
+
+Para resolver essa equação para n, primeiro encontramos o tamanho da amostra $n_{0}$ que usariamos para um SRSWR:
+
+$n_{0} = (\frac{Z_{\frac{\alpha}{2}}S}{\epsilon})$
+
+Então, o tamanho amostral desejado é:
+
+$n = \frac{n_0}{1+\frac{n_0}{N}}$
+
+Caso a principal resposta de interesse seja uma proporção, usamos:
+
+$n_{0} = \frac{(Z_\frac{\alpha}{2})^2 p(1-p)}{(\epsilon)^2}$ 
+
+**Exemplo 2.11** Suponha que queremos estimar a proporção de receitas no Novo Livro da Better Holmes & Gardens que não envolvam produtos de origem animal. Planejamos fazer um SRS de N = 1251 receitas testadas na cozinha e queremos usar um IC de 95% com margem de erro de 0,03. Então:
+
+**Solução**
+
+Para grandes populações, $S^{2} = p(1-p)$ que atinge seu valor máximo quando $p = \frac{1}{2}$. Portanto, usar $n_0 = \frac{1,96^2}{(4\epsilon^2)}$ resultará em umIC de 95% com largura de no máximo $2{e}$
+
+
+```{r}
+N = 1251
+zalfa = 1.96
+erro = 0.03
+p = 1/2
+n0 <- round(zalfa^2*p*(1-p)/(erro^2))
+n0
+```
+O tamanho da amostra ignorando o fpc é grande  em comparação com o tamanho da população, portanto, neste caso,fariamos o ajuste do fpc e usariamos:
+
+$n = \frac{n_0}{1+\frac{n_0}{N}}$
+
+```{r}
+n = round(n0/(1+n0/N))
+n
+```
+
+**Estimar quantidades desconhecidas**
+
+Quando estiver interessado em uma proporção, podemos usar $\frac{1}{4}$ como um limite superior para $S^2$.
+
+**Exemplo 2.13** Pegamos uma amostra piloto de tamanho 30 da população, o desvio padrão da amostra das 29 observações restantes foi de 519,085 (um dos municipios não tinha esse valor). Usando esse valor e uma margem de erro de desejada de 60.000, calcule o tamanho da amostra.
+
+```{r}
+zalfa = 1.96
+s = 519.085
+erro = 60.00
+n=round(zalfa^2*(s^2/erro^2))
+n
+```
+
+Determinar o tamanho da amostra é uma das etapas iniciais que devem ser tomadas em uma investigação, e nenhuma fórmula mágica lhe dirá o tamanho de amostra perfeito para o seu caso.
+
+**Amostra Sistemática**
+
+Amostragem Sistemática
+consiste em escolher um indivíduo inicialmente de forma aleatória entre a população e, posteriormente, selecionar para amostra cada enésimo indivíduo disponível no marco amostral. É um processo rápido e simples. Os resultados obtidos são representativos da população, de forma similar a amostra aleatória simples, sempre quando não exista nenhum fator intrínseco na forma que os indivíduos estão listados e que se reproduzam certas características populacionais em cada número especifico de indivíduos. Esse sucesso realmente é pouco frequente.
+
+Coleta da Amostra Sistemática.
+
+usaremos a formula: 
+
+${n \choose N} = \frac{n!(N - n)!}{N!}$
+
+```{r}
+
+N = 10
+n = 4
+k = N/n
+pop = sample(N:n)
+srs = factorial(N)/(factorial(n)*factorial(N-n))
+srs
+```
+```{r}
+s_sis <- function(pop, p=20, r=NULL)
+{
+  k <- round(N/n)
+  if (is.null(r))
+    r <- sample(1:k, 1)
+  n <- 0:round((1 * n) - 1)
+  idx <- (n * k) + r
+  res <- pop[idx,]
+  
+  return(res)
+}
+
+#amostrasistematica<-s_sis(pop)
+
+```
+
+**Amostragem Estratificada**
+
+
+
